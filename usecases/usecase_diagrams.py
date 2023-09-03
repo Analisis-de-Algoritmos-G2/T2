@@ -1,11 +1,16 @@
 from wordcloud import WordCloud, STOPWORDS
 import plotly.graph_objects as go
+from utils import transforms, files
 import matplotlib.pyplot as plt
+import plotly.io as pio
 import networkx as nx
 import itertools
+import os
 
 
-def create_cloud_words(file, stopwords):
+def create_cloud_words(file, stopwords, video_id):
+
+    stopwords.update(transforms.create_set(files.read_file(os.getenv("STOPWORDS_FILE"))))
     with open(file, 'r', encoding='utf-8') as file:
         texto = file.read()
 
@@ -19,10 +24,17 @@ def create_cloud_words(file, stopwords):
     plt.figure(figsize=(10, 10))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
+
+    output_path = os.path.join(os.getenv('DIAGRAM_FOLDER'), f'{video_id}_wordcloud.png')
+
+    # Guarda la imagen en la carpeta especificada
+    plt.savefig(output_path, bbox_inches='tight')
+
+    # Muestra la imagen en la ventana gráfica (opcional)
     plt.show()
 
 
-def create_network(texto):
+def create_network(texto, video_id):
 
     palabras = texto.split()
 
@@ -69,4 +81,6 @@ def create_network(texto):
 
     layout = go.Layout(showlegend=False, hovermode='closest')
     fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
-    fig.show()
+
+    # Guardar la figura en un archivo de imagen
+    pio.write_image(fig, os.getenv('DIAGRAM_FOLDER') + f"{video_id}_network.png")

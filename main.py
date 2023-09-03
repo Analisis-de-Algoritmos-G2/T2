@@ -17,10 +17,10 @@ def process_video(video_id):
     print(f"\n ---------------------------- Se procede a resumir, limpiar y Procesar el Transcript del debate con ID {video_id}--------------------")
 
     summarize = usecase_mining.get_summarize(usecase_mining.get_frases(transcript))
-    files.create_file((os.getenv("SUMMARIZE_DEBATE_FILE")) + video_id + ".txt", transcript)
+    files.create_file((os.getenv("SUMMARIZE_DEBATE_FILE")) + video_id + ".txt", summarize)
 
     clean_transcript = usecase_mining.process_text(transcript, usecase_mining.get_political_stopwords(transcript))
-    files.create_file((os.getenv("CLEAN_DEBATE_FILE")) + video_id + ".txt", transcript)
+    files.create_file((os.getenv("CLEAN_DEBATE_FILE")) + video_id + ".txt", clean_transcript)
 
     topics = usecase_mining.get_principal_topics(' '.join(clean_transcript))
     entities = usecase_mining.get_entities(' '.join(clean_transcript))
@@ -34,7 +34,8 @@ def process_video(video_id):
           f"El vocabulario principal fue: {vocabulary}\n"
           f"El sentimiento del debate es: {feeling}")
 
-
+    print(f"\n ---------------------------- Gráficas del debate con ID {video_id}--------------------\n")
+    usecase_diagrams.create_cloud_words((os.getenv("CLEAN_DEBATE_FILE")) + video_id + ".txt", usecase_mining.get_political_stopwords(transcript), video_id)
 
 
 if __name__ == '__main__':

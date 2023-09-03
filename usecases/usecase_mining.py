@@ -1,8 +1,7 @@
 import os
 import re
-
-import TextBlob as TextBlob
 import spacy
+from textblob import TextBlob
 from gensim.summarization.summarizer import summarize
 from gensim.models.ldamodel import LdaModel
 from utils import transforms, files
@@ -81,10 +80,11 @@ def get_political_stopwords(sample_text):
 def get_vocabulary(texto):
     palabras = [palabra for palabra in texto.split() if palabra.isalpha()]
     conteo = Counter(palabras)
-    print(conteo.most_common(20))
+    return conteo.most_common(20)
 
 
 def get_feelings(texto):
+
     blob = TextBlob(texto)
     sentimiento = blob.sentiment
 
@@ -96,9 +96,12 @@ def get_feelings(texto):
 
 
 def get_data_feeling(sentimiento):
+
+    text = ""
     if sentimiento.polarity > 0:
-        print("El texto tiene un sentimiento positivo.")
+        text = "El texto tiene un sentimiento positivo."
     elif sentimiento.polarity < 0:
-        print("El texto tiene un sentimiento negativo.")
+        text = "El texto tiene un sentimiento negativo."
     else:
-        print("El texto es neutral.")
+        text = "El texto es neutral."
+    return text
